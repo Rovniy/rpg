@@ -1,0 +1,7 @@
+{
+  "name": "rpg",
+  "devDependencies": {
+    "node-static": "^1.7.7",
+    "ws": "^3.4.0"
+  },
+}
