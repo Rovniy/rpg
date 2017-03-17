@@ -16,5 +16,5 @@ http.createServer(function (req, res) {
 
 }).listen(8080);
 
-console.log("Сервер запущен на портах 8080, 8081");
+console.log("HTTP.SERVER: server started on 8080, 8081 port");
 

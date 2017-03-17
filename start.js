@@ -4,6 +4,6 @@
 /**
  * Сборка всего сервера и его частей в единый механизм
  */
-require('./server/services/db-connect.js');
-require('./server/http.server.js');
-require('./server/websockets.js');
+require('./server/system/db.connect.js');
+require('./server/system/http.server.js');
+require('./server/system/ws.service.js');

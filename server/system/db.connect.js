@@ -23,15 +23,16 @@ function handleDisconnect() {
     dbClient = mysql.createConnection(dbConfig);
     dbClient.connect(function(err) {
         if(err) {
-            console.log('error when connecting to db:', err);
+            console.log('DB-CONNECT: error connection:', err);
             setTimeout(handleDisconnect, 2000);
         } else {
-            console.log('Connect to DB successful');
+            console.log('DB-CONNECT: connect successfully');
         }
     });
 
     dbClient.on('error', function(err) {
-        console.log('db error', err);
+        //console.log('DB-CONNECT: connection lose', err);
+        console.log('DB-CONNECT: connection lose');
         if(err.code === 'PROTOCOL_CONNECTION_LOST') {
             handleDisconnect();
         } else {
@@ -43,7 +44,7 @@ handleDisconnect();
 
 function db(query) {
     dbClient.query(query, function(error, result, fields){
-        console.log('DB response: ', result[0]);
+        console.log('DB-CONNECT: response: ', result[0]);
     });
 }
 

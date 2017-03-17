@@ -4,35 +4,39 @@
 'use strict';
 const WebSocketServer = new require('ws');
 
-var clients = {}; // подключенные клиенты
+var clients = {}, // подключенные клиенты
+    socketConfig = {
+        port: 8081
+    };
 
 /**
  * Создание WebSocket сервера
  * @type {*|Server}
  */
-var webSocketServer = new WebSocketServer.Server({port: 8081});
+var webSocketServer = new WebSocketServer.Server(socketConfig);
+console.log("WEBSOCKET: server activated");
+
 webSocketServer.on('connection', function(ws) {
-    console.log("Socket.service activated");
-    
+
     var userId = guid();
     clients[userId] = ws;
-    console.log("Новое соединение. UserID: " + userId);
+    console.log("WEBSOCKET: new user. UserID: " + userId);
 
-    messageWs(ws,userId); //Отслеживание новых сообщений
+    wsOnMessage(ws,userId); //Отслеживание новых сообщений
 
-    closeWs(ws, userId); //Отработка прерывания WS соединения
+    wsClose(ws, userId); //Отработка прерывания WS соединения
 
 });
 
 /**
  * Отслеживание новых сообщений
  */
-function messageWs(ws,userId) {
+function wsOnMessage(ws,userId) {
     ws.on('message', function(message) {
-        console.log('WS (in): ' + message);
 
-        wsSend(message, userId);
+        console.log('WEBSOCKET (in): ' + message);
 
+        wsSend(message); //Отправка сообщение всем или адруссату
     });
 }
 
@@ -42,22 +46,26 @@ function messageWs(ws,userId) {
  * @param userId - ID поьзователя
  */
 function wsSend(message, userId){
+    var sendUserCound = 0;
     if (userId){
+        sendUserCound = 1;
+        console.log('WEBSOCKET (out): ' + message);
         clients[userId].send('Это твое сообщение');
     } else {
         for(var key in clients) {
+            sendUserCound++;
             clients[key].send(message);
         }
     }
+    console.log('WEBSOCKET (out): user: ', sendUserCound, 'msg', message);
 }
-
 
 /**
  * Отработка прерывания WS соединения
  */
-function closeWs(ws, id) {
+function wsClose(ws, id) {
     ws.on('close', function(resolve) {
-        console.log('соединение закрыто ' + id, resolve);
+        console.log('WEBSOCKET: user connection lose - ' + id, resolve);
         delete clients[id];
     });
 }
