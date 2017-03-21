@@ -16,6 +16,8 @@ var dbClient,
     database: 'smartf_rpg'
 };
 
+handleDisconnect();
+
 /**
  * Создание подключение к серверу. Переподключение при потере соединения
  */
@@ -31,17 +33,21 @@ function handleDisconnect() {
     });
 
     dbClient.on('error', function(err) {
-        //console.log('DB-CONNECT: connection lose', err);
-        console.log('DB-CONNECT: connection lose');
-        if(err.code === 'PROTOCOL_CONNECTION_LOST') {
+        if (!err.fatal) {
+            console.log('DB-CONNECT: connection lose', err);
+        } else if(err.code === 'PROTOCOL_CONNECTION_LOST') {
             handleDisconnect();
         } else {
             throw err;
         }
     });
 }
-handleDisconnect();
 
+
+/**
+ * Оформление запроса к БД
+ * @param query - тело запроса - {@type:SELECT / PUT / UPDATE / DELETE, @field: field name, @from: table name, @if: condition }
+ */
 function db(query) {
     dbClient.query(query, function(error, result, fields){
         console.log('DB-CONNECT: response: ', result[0]);
